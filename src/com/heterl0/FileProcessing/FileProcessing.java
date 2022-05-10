@@ -14,9 +14,18 @@ import java.util.List;
 /**
  *
  * @author Le Van Hieu CE160866
+ * class SE1607
  */
 public class FileProcessing {
 
+    /**
+     * Check if a path have been existed, is a file or is a directory
+     * the result will display inside method. Using Class File with two method 
+     * isFile() is used to check a file and isDirectory() is used to check a
+     * directory.
+     * @param path a path name (String) 
+     * 
+     */
     public void checkInputPath(String path) {
         File f = new File(path);
         if (f.isFile()) {
@@ -28,6 +37,13 @@ public class FileProcessing {
         }
     }
 
+    /**
+     * Get all file end with extension (.java). Using ArrayList to store all of 
+     * java file at the current path user enter.
+     * @param path a path name (String)
+     * @return return List<String> all name (String) of java file at the current
+     * directory.
+     */
     public List<String> getAllFileNameJavaInDirectory(String path) {
         File f = new File(path);
         String[] listFile = f.list();
@@ -41,11 +57,24 @@ public class FileProcessing {
 
     }
 
+    /**
+     * Get all file with the length greater than the user's input size. 
+     * Using FileFilter with a method accept() return true with file is satisfied
+     * , false if not. 
+     * @param path a path name (String)
+     * @param size the smallest length of file user enter.  
+     * @return an array of File contains all satisfied files.
+     */
     public File[] getFileWithSizeGreaterThanInput(String path, int size) {
         File f = new File(path);
         if (!f.exists()) return null;
+        // Using Interface FileFilter to filte files
         File[] listFile = f.listFiles(new FileFilter() {
             public boolean accept(File pathname) {
+                
+                //  length() method return size of file with format (Byte) 
+                //  divide 1024 turn into KB, takes ceiling. (There is no file 
+                //  with 0KB!
                 if (Math.ceil(pathname.length() / 1024.0) >= size) {
                     return true;
                 } else {
@@ -53,22 +82,22 @@ public class FileProcessing {
                 }
             }
         });
-//        File[] listFileGreaterThanInput = new File[listFile.length];
-//        int index = 0;
-//        for (File fileName : listFile) {
-//            //  length() method return size of file with format (Byte) 
-//            //  divide 1024 turn into KB, takes ceiling. (There is no file 
-//            //  with 0KB!
-//            if (Math.ceil(fileName.length() / 1024.0) >= size) {
-//                listFileGreaterThanInput[index++] = fileName;
-//            }
-//        }
-//        return listFileGreaterThanInput;
         return listFile;
     }
 
+    /**
+     * Processing file, append new content into a file that has been existed, 
+     * just write into files with extension such as txt, docs,... document files.
+     * Can't append to directory or something does not exist.
+     * @param path a path name (String)
+     * @param input input content user want to append to specific file.
+     * @return return true if the method added successfully, or false if something
+     * wrong happen.
+     */
     public boolean appendContentToFile(String path, String input) {
         File f = new File(path);
+        
+        // Using FileWriter with append *mode*, add new content to the end of file
         try (FileWriter fw = new FileWriter(f, true)) {
             fw.append(input);
             return true;
@@ -77,26 +106,41 @@ public class FileProcessing {
         }
     }
 
+    /**
+     * Count the number of character in document files. Same as appendContentToFile
+     * operate on file such as txt, docs, html,... Count everything in file Alphabet,
+     * non-Alphabet, letters, digits, signals,...  all things are knew as Character.
+     * @param path a path name (String)
+     * @return the number of character in file. Return -1 if IOException happen.
+     */
     public int countCharacter(String path) {
         File f = new File(path);
+        // Using BufferedReader to read each line
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             String line = br.readLine();
             int count = 0;
-            while (line != null) {
+            // Count each line until line turn null
+            while (line != null) { 
                 count += line.length();
                 line = br.readLine();
             }
             return count;
         } catch (IOException ex) {
+            // return -1 if exception happen
             return -1;
         }
     }
 
+    /**
+     * Main menu, display menu for user use. Menu with 6 functions.
+     */
     public void callMenu() {
         Scanner sc = new Scanner(System.in);
         int choice = 0, size = 0;
         String contentInput = "", path = "";
         boolean isChoiceValid = false, isLoop = true;
+        
+        // loop program unless user choose number 6 to exit
         do {
             System.out.println("====== File Processing ======");
             System.out.println("1. Check Path");
@@ -109,7 +153,7 @@ public class FileProcessing {
                 try {
                     System.out.print("Please choice one option: ");
                     choice = sc.nextInt();
-                    if (choice < 1 && choice > 6) {
+                    if (choice < 1 || choice > 6) {
                         System.out.println("Option from 1 to 6!");
                     } else {
                         isChoiceValid = true;
@@ -119,6 +163,8 @@ public class FileProcessing {
                 }
                 sc.nextLine();
             } while (isChoiceValid == false);
+            
+            // display title of each function.
             switch (choice) {
                 case 1:
                     System.out.println("- - - - Check Path - - - -");
@@ -165,10 +211,15 @@ public class FileProcessing {
                     System.out.println("Thanks for using software");
                     System.out.println("Goodbye! See you later");
             }
+            
+            // if user's function is not number 6, user enter path to continue 
+            // fucntion.
             if (isLoop == true) {
                 System.out.print("Enter Path: ");
                 path = sc.nextLine();
             }
+            
+            // call user's chose method
             switch (choice) {
                 case 1:
                     checkInputPath(path);
@@ -208,6 +259,10 @@ public class FileProcessing {
         } while (isLoop);
     }
 
+    /**
+     * Main function
+     * @param args
+     */
     public static void main(String[] args) {
         FileProcessing fp = new FileProcessing();
         fp.callMenu();
