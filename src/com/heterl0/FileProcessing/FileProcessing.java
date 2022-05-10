@@ -43,6 +43,7 @@ public class FileProcessing {
 
     public File[] getFileWithSizeGreaterThanInput(String path, int size) {
         File f = new File(path);
+        if (!f.exists()) return null;
         File[] listFile = f.listFiles(new FileFilter() {
             public boolean accept(File pathname) {
                 if (Math.ceil(pathname.length() / 1024.0) >= size) {
@@ -178,8 +179,12 @@ public class FileProcessing {
                     break;
                 case 3:
                     File[] arrFile = getFileWithSizeGreaterThanInput(path, size);
+                    if (arrFile == null) {
+                        System.out.println("The path does not exist!");
+                        break;
+                    }
                     for (File file : arrFile) {
-                        System.out.println((file != null ? file.getName() : ""));
+                        System.out.println(file.getName());
                     }
                     System.out.println("Result " + arrFile.length + " file");
                     break;
