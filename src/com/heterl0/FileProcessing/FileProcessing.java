@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,7 +19,9 @@ import java.util.List;
  * class SE1607
  */
 public class FileProcessing {
-
+    
+    private String path; // path is used to check and process
+    
     /**
      * Check if a path have been existed, is a file or is a directory
      * the result will display inside method. Using Class File with two method 
@@ -27,6 +31,7 @@ public class FileProcessing {
      * 
      */
     public void checkInputPath(String path) {
+        this.path = path;
         File f = new File(path);
         if (f.isFile()) {
             System.out.println("Path to file");
@@ -45,6 +50,7 @@ public class FileProcessing {
      * directory.
      */
     public List<String> getAllFileNameJavaInDirectory(String path) {
+        this.path = path;
         File f = new File(path);
         String[] listFile = f.list();
         ArrayList<String> listJava = new ArrayList<>();
@@ -66,6 +72,7 @@ public class FileProcessing {
      * @return an array of File contains all satisfied files.
      */
     public File[] getFileWithSizeGreaterThanInput(String path, int size) {
+        this.path = path;
         File f = new File(path);
         if (!f.exists()) return null;
         // Using Interface FileFilter to filte files
@@ -75,7 +82,7 @@ public class FileProcessing {
                 //  length() method return size of file with format (Byte) 
                 //  divide 1024 turn into KB, takes ceiling. (There is no file 
                 //  with 0KB!
-                if (Math.ceil(pathname.length() / 1024.0) >= size) {
+                if (Math.ceil(pathname.length() / 1024.0) > size) {
                     return true;
                 } else {
                     return false;
@@ -95,7 +102,13 @@ public class FileProcessing {
      * wrong happen.
      */
     public boolean appendContentToFile(String path, String input) {
+        this.path = path;
         File f = new File(path);
+        if (!f.exists()) try {
+            f.createNewFile();
+        } catch (IOException ex) {
+            System.out.println("Can't crate new file!");
+        }
         
         // Using FileWriter with append *mode*, add new content to the end of file
         try (FileWriter fw = new FileWriter(f, true)) {
@@ -114,6 +127,7 @@ public class FileProcessing {
      * @return the number of character in file. Return -1 if IOException happen.
      */
     public int countCharacter(String path) {
+        this.path = path;
         File f = new File(path);
         // Using BufferedReader to read each line
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
